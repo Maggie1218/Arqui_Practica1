@@ -1,20 +1,22 @@
 .data
-origen: .word 5 4 3 2 1
-auxiliar:  .word 0 0 0 0 0
-destino: .word 0 0 0 0 0
 n: .word 5
 .text
+Main:
+	add $a1, $zero, 0x1001		#carga los 4lsb de la direccion de la torre A
+	sll $a1, $a1, 16		#recorre logicamente 4 posiciones cada bit para hacerlos msb
+	add $a2, $zero, $a1		#copia lo obtenido en a1 a a2
+	ori $a2, 0x0004			#hace or con 4 para moverse a la direccion de inicio de la torre B
+	add $a3, $zero, $a1		#pasa los mismos 4msb a a3
+	ori $a3, 0x0008			#hace or con 8 para moverse a la direccion de inicio de la torre C
+	lw $a0, n
 
 
-
-
-
-
-
-
-
-
-
+Torre: 
+	beq $a0, $zero, Hanoi 		#Si el numero de discos es == 0, salta a hanoi
+	sw $a0, 0($a1)			#cargamos el numero de discos a la torre origen 
+	sub  $a0, $a0, 1		#Restamos un disco
+	addi  $a1, $a1, 0x20		#Recorremos 
+	j Torre
 
 Hanoi:
 	beq $a0, 1, base		#si n==1, vamos al caso base
@@ -41,7 +43,7 @@ Hanoi:
 	add $a3, $t3, $zero 
 	jal Hanoi
 	
-
+base:
 
 
 
