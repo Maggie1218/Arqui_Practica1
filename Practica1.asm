@@ -9,12 +9,13 @@ Main:
 	add $a3, $zero, $a1		#pasa los mismos 4msb a a3
 	ori $a3, 0x0008			#hace or con 8 para moverse a la direccion de inicio de la torre C
 	lw $a0, n
+	lw $s0, n
 
 
 Torre: 
-	beq $a0, $zero, Hanoi 		#Si el numero de discos es == 0, salta a hanoi
-	sw $a0, 0($a1)			#cargamos el numero de discos a la torre origen 
-	sub  $a0, $a0, 1		#Restamos un disco
+	beq $s0, $zero, Hanoi 		#Si el numero de discos es == 0, salta a hanoi
+	sw $s0, 0($a1)			#cargamos el numero de discos a la torre origen 
+	sub  $s0, $s0, 1		#Restamos un disco
 	addi  $a1, $a1, 0x20		#Recorremos 
 	j Torre
 
@@ -44,14 +45,20 @@ Hanoi:
 	jal Hanoi
 	
 base:
-
+	add $a0, $t1, $zero
+	add $a1, $t3, $zero
+	jal Move
+	j exitRecursividad
 
 
 Move: 
 
 	lw $s0, 0($a0)			#carga en s0 el contenido de la direccion a0 (la parte mas alta de la torre de origen
-	addi $s1, $zero, 0		
+	addi $s1, $zero, 4		
 	sw $s1, 0($a0)			#pone como vacia la direccion de donde se tomo el elemento a mover
-	addi $a0, $a0, -4		#mueve la direccion "tope" de la torre de origen una posicion menos
+	addi $a0, $a0, -20		#mueve la direccion "tope" de la torre de origen una posicion menos
 	sw $s0, 0($a1)			#guarda el valor tomado de la torre de origen en el tope de la torre de destino
 	jr $ra
+	
+exitRecursividad:
+	
