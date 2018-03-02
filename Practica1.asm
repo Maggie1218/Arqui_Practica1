@@ -1,15 +1,23 @@
+
+#---------------------------------------------------------------#
+#			INTEGRANTES:				#
+#								#
+#		Margarita Jauregui Franco			#
+#		Andrea Rayón Mora				#
+#								#
+#---------------------------------------------------------------#
 .data
 n: .word 8 
 .text
-Main:
+Main: 
 	add $a1, $zero, 0x1001		#carga los 4lsb de la direccion de la torre A
 	sll $a1, $a1, 16		#recorre logicamente 4 posiciones cada bit para hacerlos msb
 	add $a2, $zero, $a1		#copia lo obtenido en a1 a a2
 	ori $a2, 0x0004			#hace or con 4 para moverse a la direccion de inicio de la torre B
 	add $a3, $zero, $a1		#pasa los mismos 4msb a a3
 	ori $a3, 0x0008			#hace or con 8 para moverse a la direccion de inicio de la torre C	
-	lw $a0, n
-	lw $s0, n
+	lw $a0, n			#carga en numero de discos
+	lw $s0, n			#carga el numero de discos
 
 
 Torre: 
@@ -31,14 +39,13 @@ Hanoi:
 	sw $ra, 12($sp)
 	beq $a0, 1, base		#si n==1, vamos al caso base
 	addi $a0, $a0, -1		#restamos un disco
-					#respaldar valores en registros auxiliares
-					#para poder pasarlos posteriomente 
-	add $t2, $a2, $zero		#como argumentos en el
+					
+	add $t2, $a2, $zero		#Pasamos argumentos para volver a llamar hanoi
 	add $a2, $a3, $zero		#a2 = dest
 	add $a3, $t2, $zero		#a3 = aux
 	jal Hanoi
-					#para poder pasarlos posteriomente 
-	add $t2, $a2, $zero		#como argumentos en el
+					
+	add $t2, $a2, $zero		#Respaldamos valores de a2 y a3 para hacer swap
 	add $t3, $a3, $zero
 	add $a2, $t3, $zero		#a2 = dest
 	add $a3, $t2, $zero		#a3 = aux
@@ -48,19 +55,19 @@ Hanoi:
 	sw $t3, 4($sp)		
 	sw $a3, 8($sp)	
 	lw $a2, 4($sp)
-	add $t1, $a1, $zero		#Respaldamos valores
+	add $t1, $a1, $zero		#Respaldamos valores de las torres
 	add $t2, $a3, $zero		#
 	add $t3, $a2, $zero
-					#a1 = c7
-	add $a1, $t3, $zero		#a2 = a
-	add $a2, $t1, $zero		#a3 = b
-	add $a3, $t2, $zero 
+					
+	add $a1, $t3, $zero		#a1 = Aux
+	add $a2, $t1, $zero		#a2 = org
+	add $a3, $t2, $zero 		#a3 = Dest
 	
 	jal Hanoi
-	sw $a2, 0($sp)
+	sw $a2, 0($sp)			#Actualizamos stack
 	sw $a1, 4($sp)
 	sw $a3, 8($sp)
-	addi $a0, $a0, 1 
+	addi $a0, $a0, 1 		#Sumamos un disco, si llega aqui significa que ya va de regreso
 	j exitRecursividad
 
 base:
